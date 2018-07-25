@@ -1000,10 +1000,123 @@ public class CategoryJsonController {
 	}
 }
 ```
-- 测试：因为无法访问静态资源（暂时没有解决），使用Postman来进行测试。
-    - 获取一条数据
+- 测试：使用访问静态资源（html）或者使用Postman来进行测试。
+    - 添加三个html文件，使用ajax请求JSON数据（注意静态资源存放的位置，位于webapp下，与WEB-INF是同一级的，这样才可以访问）    
+    1.获取全部数据（getMany.html）
+    ```bash
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">  
+    <title>用AJAX以JSON方式获取数据</title>  
+    <script type="text/javascript" src="jquery.min.js"></script>  
+    </head>  
+    <body>  
+        <input type="button" value="通过AJAX获取多个Hero对象111" id="sender">   
+        <div id="messageDiv"></div>      
+        <script>  
+        $('#sender').click(function(){  
+            var url="getManyCategory";  
+            $.post(
+                    url, 
+                    function(data) { 
+                        console.log(data);
+                        var categorys = $.parseJSON(data);
+                        console.log(categorys.length);
+
+                        for(i in categorys){
+                            var old = $("#messageDiv").html();
+                            var category = categorys[i];
+                            $("#messageDiv").html(old + "<br>"+category.id+"   -----   "+category.name);  
+                        }
+            });   
+        });  
+        </script>  
+    </body>  
+    </body>
+    </html>
+    ```  
+    2.获取一条数据（getOne.html）
+    ```bash
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">  
+    <title>用AJAX以JSON方式获取数据</title>  
+    <script type="text/javascript" src="jquery.min.js"></script>  
+    </head>  
+    <body>  
+        <input type="button" value="通过AJAX获取一个Hero对象---" id="sender">   
+    
+        <div id="messageDiv"></div>  
+        
+        <script>  
+        $('#sender').click(function(){  
+            var url="getOneCategory/100";
+            $.post(
+                    url, 
+                    function(data) {
+                        var json=JSON.parse(data);  
+                        var name =json.category.name;  
+                        var id = json.category.id;
+                        $("#messageDiv").html("分类id："+ id + "<br>分类名称:" +name );
+                        
+            });   
+        });  
+        </script>  
+    </body>  
+    
+    </body>
+    </html>
+    ```  
+    3.提交一条数据（submit.html）
+    ```bash
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">  
+    <title>用AJAX以JSON方式提交数据</title>  
+    <script type="text/javascript" src="jquery.min.js"></script>  
+    </head>  
+    <body>  
+        <form >  
+        id：<input type="text" id="id" value="123" /><br/>  
+        名称：<input type="text" id="name" value="category xxx"/><br/>  
+            <input type="button" value="提交" id="sender">   
+        </form>  
+        <div id="messageDiv"></div>  
+        
+        <script>  
+        $('#sender').click(function(){  
+            var id=document.getElementById('id').value;  
+            var name=document.getElementById('name').value;  
+            var category={"name":name,"id":id};  
+            var jsonData = JSON.stringify(category);
+            var page="submitCategory";  
+            
+            $.ajax({
+                    type:"post",
+                url: page,
+                data:jsonData,
+                dataType:"json",
+                contentType : "application/json;charset=UTF-8",
+                success: function(result){
+                }
+                });
+            alert("提交成功，请在Tomcat控制台查看服务端接收到的数据");
+
+        });
+        </script>  
+    </body>  
+    
+    </body>
+    </html>
+    ```
+    - 获取一条数据  
+    
     ![SSM-JSON测试1](https://image-1255440489.cos.ap-chengdu.myqcloud.com/SSMJSON%E6%B5%8B%E8%AF%951.jpg)
     - 获取全部数据  
+      
     ![SSM-JSON测试2](https://image-1255440489.cos.ap-chengdu.myqcloud.com/SSMJSON%E6%B5%8B%E8%AF%952.jpg )
 </font>  
 
